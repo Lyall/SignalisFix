@@ -29,5 +29,5 @@ Please report any issues you see.
 | Ultrawide support (in-game). | 
 
 ## Credits
-- [MechanicalPaladin](#) for testing and providing feedback.
+- [MechanicalPaladin](#) (WSGF Discord) for testing and providing feedback.
 - [BepinEx](https://github.com/BepInEx/BepInEx) is licensed under the GNU Lesser General Public License v2.1.
