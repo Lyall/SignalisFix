@@ -23,7 +23,7 @@ Please report any issues you see.
 ## Screenshots
 |   |
 |:--:|
-| Ultrawide pillarbox removal. | 
+| Ultrawide support. | 
 
 ## Credits
 - [MechanicalPaladin](#) for testing and providing feedback.
