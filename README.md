@@ -3,7 +3,8 @@
 [![Github All Releases](https://img.shields.io/github/downloads/Lyall/SignalisFix/total.svg)](https://github.com/Lyall/SignalisFix/releases)
 
 This BepInEx plugin for the game Signalis features:
-- Ultrawide support.
+- Ultrawide support with many fixes to accommodate.
+- Custom resolution support.
 - Intro/logos skip.
 
 ## Installation
