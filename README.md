@@ -24,8 +24,7 @@ Please report any issues you see.
 |:--:|
 | Ultrawide support (main menu). | 
 
-| ![ezgif-2-8f66118449](https://user-images.githubusercontent.com/695941/202784378-48de8abd-030e-4d2a-ae89-a0879e58c02f.gif)
- |
+| ![ezgif-2-8f66118449](https://user-images.githubusercontent.com/695941/202784378-48de8abd-030e-4d2a-ae89-a0879e58c02f.gif) |
 |:--:|
 | Ultrawide support (in-game). | 
 
