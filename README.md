@@ -18,7 +18,6 @@ This BepInEx plugin for the game Signalis features:
 
 ## Known Issues
 Please report any issues you see.
-- Camp canteen view is broken and shows as a narrow window.
 
 ## Screenshots
 |   |
