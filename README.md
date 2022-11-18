@@ -20,9 +20,13 @@ This BepInEx plugin for the game Signalis features:
 Please report any issues you see.
 
 ## Screenshots
-|   |
+| ![ezgif-2-d3f12842a4](https://user-images.githubusercontent.com/695941/202784123-ca70739c-59ad-445e-8283-a4f3f9158627.gif) |
 |:--:|
-| Ultrawide support. | 
+| Ultrawide support (main menu). | 
+
+| ![ezgif-2-bdbab5a485](https://user-images.githubusercontent.com/695941/202784210-64470c94-0287-4b35-a93c-d2ae8eb94043.gif) |
+|:--:|
+| Ultrawide support (in-game). | 
 
 ## Credits
 - [MechanicalPaladin](#) for testing and providing feedback.
