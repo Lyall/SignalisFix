@@ -83,7 +83,6 @@ namespace SignalisFix
 
                 Screen.SetResolution(__0, __1, fullscreenMode, __3);
                 Log.LogInfo($"Custom Resolution: Set resolution {__0}x{__1}@{__3}hz. Fullscreen = {fullscreenMode}.");
-                NewAspectRatio = (float)__0 / (float)__1;
                 Harmony.CreateAndPatchAll(typeof(CustomResolutionPatch));
             }
 
@@ -99,7 +98,6 @@ namespace SignalisFix
 
         }
 
-        public static float NewAspectRatio = (float)Screen.currentResolution.width / (float)Screen.currentResolution.height;
 
         [HarmonyPatch]
         [HarmonyPriority(1)]
@@ -121,22 +119,31 @@ namespace SignalisFix
         {
             // Aspect Ratio
             public static float DefaultAspectRatio = (float)16 / 9;
-
+            public static float NewAspectRatio = (float)Screen.width / (float)Screen.height;
             public static float AspectMultiplier = NewAspectRatio / DefaultAspectRatio;
-            public static float AspectDivider = DefaultAspectRatio / NewAspectRatio;
 
-            // Render texture dimensions
             public static float NewHorFloat = 640 * AspectMultiplier;
             public static int NewHor = (int)Mathf.CeilToInt(NewHorFloat);
 
-            // Adjust scaling + render tex to conform to new aspect ratio
-            [HarmonyPatch(typeof(ScalingManager), nameof(ScalingManager.Start))]
+            // Update scaling on res change. Allows it to be dynamic.
+            [HarmonyPatch(typeof(Screen), nameof(UnityEngine.Screen.SetResolution), new Type[] { typeof(int), typeof(int), typeof(bool), typeof(int) })]
+            [HarmonyPatch(typeof(Screen), nameof(UnityEngine.Screen.SetResolution), new Type[] { typeof(int), typeof(int), typeof(FullScreenMode), typeof(int) })] // Custom Resolution
             [HarmonyPostfix]
-            public static void ScalingFix(ScalingManager __instance)
+            public static void UpdateScaling(ref int __0, ref int __1)
             {
+                if (!bCustomResolution.Value)
+                {
+                    NewAspectRatio = (float)__0 / (float)__1;
+                    AspectMultiplier = NewAspectRatio / DefaultAspectRatio;
+
+                    NewHorFloat = 640 * AspectMultiplier;
+                    NewHor = (int)Mathf.CeilToInt(NewHorFloat);
+
+                    Log.LogInfo($"Current res = {__0}x{__1}.");
+                }
+
                 if (NewAspectRatio > DefaultAspectRatio)
                 {
-                    __instance.baseResolution = new Vector2(NewHor, 360);
                     ScalingManager.scalingType = ScalingManager.ScalingType.distort;
 
                     List<Camera> cameras = new List<Camera>();
@@ -162,15 +169,36 @@ namespace SignalisFix
                             old.Release();
                             old.width = NewHor;
                             old.height = 360;
-                            Log.LogInfo($"Released and resized render texture for MainScreen.");
-
-                            var diagcam = GameObject.Find("Diag/Effects Camera").GetComponent<Camera>();
-                            diagcam.aspect = NewAspectRatio;
-                            Log.LogInfo($"Adjust Diag/Effects aspect ratio.");
+                            cam.ResetAspect();
+                            Log.LogInfo($"Released and resized render texture for MainScreen ({NewHor}x360).");
                         }
-
                     }
+
+                    var diagcam = GameObject.Find("Diag/Effects Camera").GetComponent<Camera>();
+                    diagcam.aspect = NewAspectRatio;
+                    Log.LogInfo($"Adjust Diag/Effects aspect ratio.");
                 }       
+            }
+
+            // Release and resize Enemy FX Camera render texture
+            [HarmonyPatch(typeof(EnemyManager), nameof(EnemyManager.OnEnable))]
+            [HarmonyPostfix]
+            public static void EnemyFXFix()
+            {  
+                if (NewAspectRatio > DefaultAspectRatio)
+                {
+                    var enemyFX = GameObject.Find("Enemy FX Camera").GetComponent<Camera>();
+
+                    if (enemyFX.targetTexture != null)
+                    {
+                        RenderTexture enemyrt = enemyFX.targetTexture;
+                        enemyrt.Release();
+                        enemyrt.width = NewHor;
+                        enemyrt.height = 360;
+                        enemyFX.ResetAspect();
+                        Log.LogInfo($"Released and resized render texture for Enemy FX Camera.");
+                    }   
+                }
             }
 
             // Adjust size of input canvas during "Events"
@@ -231,8 +259,6 @@ namespace SignalisFix
             }
 
             // Resize black bars in cutscenes
-            // Doing this on update is bad but FadeIn overrides the scale, at least it only happens during cutscenes.
-            //[HarmonyPatch(typeof(BlackBars), nameof(BlackBars.Update))]
             [HarmonyPatch(typeof(BlackBars), nameof(BlackBars.On))]
             [HarmonyPatch(typeof(BlackBars), nameof(BlackBars.FadeIn), new Type[] { } )]
             [HarmonyPatch(typeof(BlackBars), nameof(BlackBars.FadeIn), new Type[] { typeof(float) })]
