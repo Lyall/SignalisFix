@@ -170,12 +170,15 @@ namespace SignalisFix
                             old.width = NewHor;
                             old.height = 360;
                             cam.ResetAspect();
+                            cam.backgroundColor = Color.black;
+
                             Log.LogInfo($"Released and resized render texture for MainScreen ({NewHor}x360).");
                         }
                     }
 
                     var diagcam = GameObject.Find("Diag/Effects Camera").GetComponent<Camera>();
                     diagcam.aspect = NewAspectRatio;
+                    diagcam.backgroundColor = Color.black;
                     Log.LogInfo($"Adjust Diag/Effects aspect ratio.");
                 }       
             }
@@ -198,6 +201,26 @@ namespace SignalisFix
                         enemyFX.ResetAspect();
                         Log.LogInfo($"Released and resized render texture for Enemy FX Camera.");
                     }   
+                }
+            }
+
+            // Fix fotos
+            [HarmonyPatch(typeof(EideticModule), nameof(EideticModule.OnEnable))]
+            [HarmonyPostfix]
+            public static void EnemyFXFix(EideticModule __instance)
+            {
+                if (NewAspectRatio > DefaultAspectRatio)
+                {
+                    var quad = __instance._camera.transform.GetChild(0);
+                    var quadtrans = quad.GetComponent<Transform>();
+
+                    if (quad && quadtrans.localScale.x == 64)
+                    {
+                        Vector3 quadscale = quad.localScale;
+                        quadscale.x *= AspectMultiplier;
+                        quadtrans.localScale = quadscale;
+                       Log.LogInfo($"Rescaled foto camera quad.");
+                    }
                 }
             }
 
