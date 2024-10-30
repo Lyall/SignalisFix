@@ -106,7 +106,6 @@ namespace SignalisFix
             foreach (var camera in Camera.allCameras)
             {
                 camera.backgroundColor = Color.black;
-                Log.LogInfo($"{camera.name} to {camera.backgroundColor}");
             }
         }
 
