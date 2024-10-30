@@ -7,6 +7,7 @@ using BepInEx.Logging;
 
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 using System.Collections.Generic;
 using System;
@@ -96,8 +97,18 @@ namespace SignalisFix
                 Harmony.CreateAndPatchAll(typeof(IntroSkipPatch));
             }
 
+            SceneManager.sceneLoaded += (UnityAction<Scene, LoadSceneMode>)OnSceneLoaded;
         }
 
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            // Set all cameras background color to black
+            foreach (var camera in Camera.allCameras)
+            {
+                camera.backgroundColor = Color.black;
+                Log.LogInfo($"{camera.name} to {camera.backgroundColor}");
+            }
+        }
 
         [HarmonyPatch]
         [HarmonyPriority(1)]
